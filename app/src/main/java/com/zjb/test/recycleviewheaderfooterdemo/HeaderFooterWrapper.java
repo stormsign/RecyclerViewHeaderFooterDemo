@@ -68,6 +68,10 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
         notifyItemChanged(getItemCount());
     }
 
+    public RecyclerView.Adapter getInnerAdapter() {
+        return mInnerAdapter;
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (isHeaderViewPos(position)){

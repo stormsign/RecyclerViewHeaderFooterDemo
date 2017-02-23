@@ -26,7 +26,7 @@
             android:layout_margin="10dp"
             android:onClick="removeHeader"
             android:layout_gravity="left"
-            android:gravity="center"/>
+            android:gravity="center" />
 
         <TextView
             android:layout_width="0dp"
@@ -43,7 +43,13 @@
 
     </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
+    <TextView android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:ellipsize="end"/>
+
+        <com.zjb.test.recycleviewheaderfooterdemo.MyRecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
