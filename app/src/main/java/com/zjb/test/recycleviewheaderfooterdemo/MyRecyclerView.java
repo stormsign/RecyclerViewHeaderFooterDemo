@@ -1,11 +1,13 @@
 package com.zjb.test.recycleviewheaderfooterdemo;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,15 +22,25 @@ public class MyRecyclerView extends RecyclerView {
     private HeaderFooterWrapper wrapper;
     private View header;
     private View footer;
-    private final int MAX_HEADERHEIGHT = 200;
+    private final int MAX_HEADERHEIGHT = 600;
+    private final int FIX_HEADERHEIGHT = 300;
+    private final int BUFFER_HEIGHT = 200;
+    private int headerFinalHeight;
+
+    private int header_status;
+
+    private final int HEADER_HIDE = 0;
+    private final int HEADER_SHOW = 1;
+    private final int HEADER_LOADING = 2;
 
     private final int PAGESIZE = 10;
 
     public boolean hasHeader;
     public boolean hasFooter;
+    boolean footerEnable;
+    boolean headerEnable;
 
     public boolean scrolldown = false;
-    private GestureDetector gd;
     private MyScrollListener myScrollListener;
 
     public MyRecyclerView(Context context) {
@@ -49,42 +61,74 @@ public class MyRecyclerView extends RecyclerView {
             wrapper = (HeaderFooterWrapper) adapter;
         }
         header = wrapper.getHeaderView();
+        ViewGroup.LayoutParams params = header.getLayoutParams();
+        params.height = 0;
+        headerFinalHeight = 0;
+        header.setLayoutParams(params);
         footer = wrapper.getFooterView();
         myScrollListener = new MyScrollListener();
         addOnScrollListener(myScrollListener);
         super.setAdapter(adapter);
     }
 
+    private float startY;
+    private float endY;
+    private float dy;
+    private float headerHeight;
+
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        float startY = 0;
-        float endY = 0;
-        float dY = 0 ;
+
         Log.i("LOG", "e.getAction = " + e.getAction());
-//        gd.onTouchEvent(e);
         switch (e.getAction()){
             case MotionEvent.ACTION_DOWN:
-                startY = e.getY();
+                startY = e.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                endY = e.getY();
-                dY = endY - startY;
-                Log.i("LOG", e.getX() + " : " + e.getY() + " scrollY=" + dY);
-                if (header!=null) {
-                    ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
-                    layoutParams.height = (int) dY;
-                    header.setLayoutParams(layoutParams);
+                endY = e.getRawY();
+                dy = endY - startY;
+
+                Log.i("LOG", "endY = "+endY + "   scrollY=" + headerHeight);
+                if (dy > 0) {
+                    if (header_status == HEADER_HIDE && dy >= BUFFER_HEIGHT && dy <= MAX_HEADERHEIGHT + BUFFER_HEIGHT) {
+                        headerHeight = dy - BUFFER_HEIGHT;
+                        if (header != null) {
+                            ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
+                            layoutParams.height = (int) headerHeight;
+                            header.setLayoutParams(layoutParams);
+                        }
+                    } else if (header_status == HEADER_SHOW && dy + headerHeight <= MAX_HEADERHEIGHT) {
+                        if (header != null) {
+                            ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
+                            layoutParams.height = (int) (headerHeight + dy);
+                            header.setLayoutParams(layoutParams);
+                        }
+                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i("LOG", "animation");
+                if (header_status == HEADER_HIDE){
+                    if (dy >= BUFFER_HEIGHT){
+                        if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){
+                            header_status = HEADER_SHOW;
+                        }
+                    }
+                }else if (header_status == HEADER_SHOW){
+
+                }
+                fixHeaderHeight();
                 break;
         }
         return super.onTouchEvent(e);
     }
 
     public void removeHeader(View view){
-
+        if (header != null){
+            header_status = HEADER_HIDE;
+            fixHeaderHeight();
+        }
+        hasHeader = false;
     }
 
     public void removeFooter(View view){
@@ -96,13 +140,64 @@ public class MyRecyclerView extends RecyclerView {
         hasFooter = false;
     }
 
+
+    private void fixHeaderHeight(){
+        final ViewWrapper headerWrapper = new ViewWrapper(header);
+        ValueAnimator heightA = null;
+        if (header_status == HEADER_SHOW) {
+            heightA =
+                    ObjectAnimator.ofFloat(headerWrapper, headerWrapper.HEIGHT, headerHeight,
+                            FIX_HEADERHEIGHT);
+            headerHeight = FIX_HEADERHEIGHT;
+        }else if (header_status == HEADER_HIDE){
+            heightA =
+                    ObjectAnimator.ofFloat(headerWrapper, headerWrapper.HEIGHT, headerHeight, 0);
+            headerHeight = 0;
+        }
+        if (heightA != null) {
+            heightA.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    headerWrapper.getV().invalidate();
+                }
+            });
+            heightA.setDuration(200);
+            AnimatorSet as = new AnimatorSet();
+            as.play(heightA);
+            as.start();
+        }
+    }
+
+    class ViewWrapper {
+        public final String HEIGHT = "height";
+        View v;
+        float height;
+        float alpha;
+
+        public ViewWrapper(View v) {
+            this.v = v;
+        }
+
+        public View getV() {
+            return v;
+        }
+
+        public float getHeight() {
+            return height;
+        }
+
+        public void setHeight(float height) {
+            this.height = height;
+            v.getLayoutParams().height = (int) height;
+            v.requestLayout();
+        }
+    }
+
     class MyScrollListener extends RecyclerView.OnScrollListener{
 
         private int lastVisibleItem;
         private int firstVisibleItem;
         int scrollDownThreshold = 0;
-        boolean footerEnable;
-        boolean headerEnable;
 
 //        private static final boolean SCROLL_UP = 1;
 //        private static final int SCROLL_DOWN = -1;
@@ -115,20 +210,21 @@ public class MyRecyclerView extends RecyclerView {
             if (newState == RecyclerView.SCROLL_STATE_IDLE
                     && firstVisibleItem == wrapper.getHeadersCount()
                     && !headerEnable
-                    && !hasHeader) {
+//                    && !isHeaderShowing()
+                    ) {
                 Toast.makeText(getContext(), "到顶了", Toast.LENGTH_SHORT).show();
                 headerEnable = true;
             }
-            if (newState == RecyclerView.SCROLL_STATE_DRAGGING
-                    && firstVisibleItem == wrapper.getHeadersCount()
-                    && lastVisibleItem != wrapper.getHeadersCount() + wrapper.getRealItemCount()
-                    && !headerEnable
-                    && !hasHeader){
-//                wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listheader, recyclerView, false));
-//                wrapper.notifyItemInserted(0);
-                hasHeader = true;
-                headerEnable = false;
-            }
+//            if (newState == RecyclerView.SCROLL_STATE_DRAGGING
+//                    && firstVisibleItem == wrapper.getHeadersCount()
+//                    && lastVisibleItem != wrapper.getHeadersCount() + wrapper.getRealItemCount()
+//                    && !headerEnable
+//                    && !hasHeader){
+////                wrapper.addHeaderView(LayoutInflater.from(getContext()).inflate(R.layout.item_listheader, recyclerView, false));
+////                wrapper.notifyItemInserted(0);
+//                hasHeader = true;
+//                headerEnable = false;
+//            }
             if (newState == RecyclerView.SCROLL_STATE_IDLE
                     && lastVisibleItem == wrapper.getItemCount() - 1
                     && firstVisibleItem != 0
@@ -170,7 +266,5 @@ public class MyRecyclerView extends RecyclerView {
         }
 
     }
-
-
 
 }

@@ -36,13 +36,8 @@ public class MainActivity extends AppCompatActivity {
         MyAdapter adapter = new MyAdapter(this, list);
         wrapper = new HeaderFooterWrapper(adapter);
         View header = LayoutInflater.from(MainActivity.this).inflate(R.layout.item_listheader, recyclerView, false);
-        ViewGroup.LayoutParams params = header.getLayoutParams();
-        params.height = 0;
-        header.setLayoutParams(params);
         wrapper.addHeaderView(header);
         recyclerView.setAdapter(wrapper);
-//        myScrollListener = new MyScrollListener();
-//        recyclerView.addOnScrollListener(myScrollListener);
 
     }
 
