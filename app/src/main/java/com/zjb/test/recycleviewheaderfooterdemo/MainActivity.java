@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -25,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        FrameLayout parentView = (FrameLayout) getWindow().getDecorView();
         recyclerView = (MyRecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -39,6 +43,14 @@ public class MainActivity extends AppCompatActivity {
         wrapper.addHeaderView(header);
         recyclerView.setAdapter(wrapper);
 
+        MaskView maskView = (MaskView) LayoutInflater.from(this).inflate(R.layout.mask_view, null);
+
+        TextView guideText = (TextView) maskView.findViewById(R.id.guidetext);
+        parentView.addView(maskView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT));
+
+
+
     }
 
     public void removeHeader(View view){
@@ -49,7 +61,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.removeFooter(view);
     }
 
-
+    private void getstatusBarHeight() {
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            int statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+            System.out.println("hxy:"+"statusBarHeight"+statusBarHeight);
+        }
+    }
 
 
 
