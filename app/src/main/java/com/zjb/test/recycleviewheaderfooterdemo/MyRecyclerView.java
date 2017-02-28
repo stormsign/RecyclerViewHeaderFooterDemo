@@ -7,7 +7,6 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -79,7 +78,6 @@ public class MyRecyclerView extends RecyclerView {
     @Override
     public boolean onTouchEvent(MotionEvent e) {
 
-        Log.i("LOG", "e.getAction = " + e.getAction());
         switch (e.getAction()){
             case MotionEvent.ACTION_DOWN:
                 startY = e.getRawY();
@@ -88,7 +86,6 @@ public class MyRecyclerView extends RecyclerView {
                 endY = e.getRawY();
                 dy = endY - startY;
 
-                Log.i("LOG", "endY = "+endY + "   scrollY=" + headerHeight);
                 if (dy > 0) {
                     if (header_status == HEADER_HIDE && dy >= BUFFER_HEIGHT && dy <= MAX_HEADERHEIGHT + BUFFER_HEIGHT) {
                         headerHeight = dy - BUFFER_HEIGHT;
@@ -107,7 +104,6 @@ public class MyRecyclerView extends RecyclerView {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.i("LOG", "animation");
                 if (header_status == HEADER_HIDE){
                     if (dy >= BUFFER_HEIGHT){
                         if (dy >= FIX_HEADERHEIGHT + BUFFER_HEIGHT){
@@ -206,7 +202,6 @@ public class MyRecyclerView extends RecyclerView {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
-            Log.i("TAG", "FOOTER ENABLE: " + footerEnable);
             if (newState == RecyclerView.SCROLL_STATE_IDLE
                     && firstVisibleItem == wrapper.getHeadersCount()
                     && !headerEnable
@@ -238,7 +233,6 @@ public class MyRecyclerView extends RecyclerView {
                     && firstVisibleItem != 0
                     && footerEnable
                     && !hasFooter){
-                Log.i("TAG", "show footer");
                 wrapper.addFooterView(LayoutInflater.from(getContext()).inflate(R.layout.item_listfooter, recyclerView, false));
                 wrapper.notifyItemChanged(wrapper.getHeadersCount() + wrapper.getRealItemCount() + wrapper.getFootersCount());
                 hasFooter = true;
@@ -248,7 +242,6 @@ public class MyRecyclerView extends RecyclerView {
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            Log.i("TAG", "dy = " + dy);
             super.onScrolled(recyclerView, dx, dy);
             lastVisibleItem =
                     ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();

@@ -15,7 +15,7 @@
         android:orientation="horizontal"
         android:padding="10dp">
 
-        <TextView
+        <TextView android:id="@+id/left"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

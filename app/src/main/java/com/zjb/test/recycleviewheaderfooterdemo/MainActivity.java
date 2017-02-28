@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,8 @@ public class MainActivity extends AppCompatActivity {
     private MyRecyclerView recyclerView;
     private List<String> list;
     private HeaderFooterWrapper wrapper;
-//    private MyScrollListener myScrollListener;
+    private FrameLayout parentView;
+    //    private MyScrollListener myScrollListener;
 
 
     @Override
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        FrameLayout parentView = (FrameLayout) getWindow().getDecorView();
+        parentView = (FrameLayout) getWindow().getDecorView();
         recyclerView = (MyRecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -43,13 +45,25 @@ public class MainActivity extends AppCompatActivity {
         wrapper.addHeaderView(header);
         recyclerView.setAdapter(wrapper);
 
-        MaskView maskView = (MaskView) LayoutInflater.from(this).inflate(R.layout.mask_view, null);
 
-        TextView guideText = (TextView) maskView.findViewById(R.id.guidetext);
-        parentView.addView(maskView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT));
+    }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final TextView leftText = (TextView) findViewById(R.id.left);
+        leftText.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        Log.i("LOG", " width=" + leftText.getMeasuredWidth() + "  height=" + leftText.getMeasuredHeight());
+        leftText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                MaskView maskView = new MaskView(MainActivity.this, leftText);
+                maskView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+                parentView.addView(maskView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT));
+                maskView.invalidate();
+            }
+        });
 
     }
 
