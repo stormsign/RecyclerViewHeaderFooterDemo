@@ -13,16 +13,19 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.zjb.test.recycleviewheaderfooterdemo.model.TypeOne;
+import com.zjb.test.recycleviewheaderfooterdemo.model.TypeThree;
+import com.zjb.test.recycleviewheaderfooterdemo.model.TypeTwo;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private MyRecyclerView recyclerView;
-    private List<String> list;
+    private List<Visitor> list;
     private HeaderFooterWrapper wrapper;
     private FrameLayout parentView;
-    //    private MyScrollListener myScrollListener;
 
 
     @Override
@@ -35,10 +38,24 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         list = new ArrayList<>();
-        for (int i=0; i<10; i++){
-            list.add(i+"");
-        }
-        MyAdapter adapter = new MyAdapter(this, list);
+        TypeOne typeOne = new TypeOne();
+        typeOne.setText("TEXT");
+        TypeTwo typeTwo = new TypeTwo();
+        typeTwo.setImgRes(R.mipmap.ic_launcher);
+        TypeThree typeThree = new TypeThree();
+        typeThree.setText("TEXT");
+        list.add(typeOne);
+        list.add(typeOne);
+        list.add(typeOne);
+        list.add(typeTwo);
+        list.add(typeTwo);
+        list.add(typeTwo);
+        list.add(typeOne);
+        list.add(typeThree);
+        list.add(typeThree);
+        list.add(typeThree);
+//        MyAdapter adapter = new MyAdapter(this, list);
+        MultiTypeAdapter adapter = new MultiTypeAdapter(list);
         wrapper = new HeaderFooterWrapper(adapter);
         View header = LayoutInflater.from(MainActivity.this).inflate(R.layout.item_listheader, recyclerView, false);
         wrapper.addHeaderView(header);

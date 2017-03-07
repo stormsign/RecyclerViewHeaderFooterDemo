@@ -26,7 +26,6 @@ public class HeaderFooterWrapper<T> extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public boolean isFooterViewPos(int position){
-//        return position > mInnerAdapter.getItemCount() && position < getFootersCount();
         return position >= getHeadersCount() + getRealItemCount();
     }
 
