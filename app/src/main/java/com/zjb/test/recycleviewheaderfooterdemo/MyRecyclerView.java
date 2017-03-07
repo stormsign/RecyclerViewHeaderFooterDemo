@@ -21,7 +21,7 @@ public class MyRecyclerView extends RecyclerView {
     private HeaderFooterWrapper wrapper;
     private View header;
     private View footer;
-    private final int MAX_HEADERHEIGHT = 600;
+    private final int MAX_HEADERHEIGHT = 800;
     private final int FIX_HEADERHEIGHT = 300;
     private final int BUFFER_HEIGHT = 200;
     private int headerFinalHeight;
@@ -94,11 +94,15 @@ public class MyRecyclerView extends RecyclerView {
                             layoutParams.height = (int) headerHeight;
                             header.setLayoutParams(layoutParams);
                         }
-                    } else if (header_status == HEADER_SHOW && dy + headerHeight <= MAX_HEADERHEIGHT) {
-                        if (header != null) {
-                            ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
-                            layoutParams.height = (int) (headerHeight + dy);
-                            header.setLayoutParams(layoutParams);
+                    } else if (header_status == HEADER_SHOW) {
+                        if (dy + headerHeight <= MAX_HEADERHEIGHT) {
+                            if (header != null) {
+                                ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
+                                layoutParams.height = (int) (headerHeight + dy);
+                                header.setLayoutParams(layoutParams);
+                            }
+                        }else {
+                            headerHeight = MAX_HEADERHEIGHT;
                         }
                     }
                 }
@@ -142,7 +146,8 @@ public class MyRecyclerView extends RecyclerView {
         ValueAnimator heightA = null;
         if (header_status == HEADER_SHOW) {
             heightA =
-                    ObjectAnimator.ofFloat(headerWrapper, headerWrapper.HEIGHT, headerHeight,
+                    ObjectAnimator.ofFloat(headerWrapper, headerWrapper.HEIGHT,
+                            headerWrapper.getV().getLayoutParams().height,
                             FIX_HEADERHEIGHT);
             headerHeight = FIX_HEADERHEIGHT;
         }else if (header_status == HEADER_HIDE){

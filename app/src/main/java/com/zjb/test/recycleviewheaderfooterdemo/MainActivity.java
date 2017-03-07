@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,21 +48,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        TextView leftText = (TextView) findViewById(R.id.left);
+//        leftText.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//        Log.i("LOG", " width=" + leftText.getMeasuredWidth() + "  height=" + leftText.getMeasuredHeight());
+        MaskView maskView = new MaskView(MainActivity.this, leftText);
+//        maskView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+//        parentView.addView(maskView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+//                FrameLayout.LayoutParams.MATCH_PARENT));
+        maskView.invalidate();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        final TextView leftText = (TextView) findViewById(R.id.left);
-        leftText.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        Log.i("LOG", " width=" + leftText.getMeasuredWidth() + "  height=" + leftText.getMeasuredHeight());
-        leftText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                MaskView maskView = new MaskView(MainActivity.this, leftText);
-                maskView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-                parentView.addView(maskView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT));
-                maskView.invalidate();
-            }
-        });
 
     }
 

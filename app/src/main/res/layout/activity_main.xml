@@ -25,7 +25,6 @@
             android:padding="10dp"
             android:layout_margin="10dp"
             android:onClick="removeHeader"
-            android:layout_gravity="left"
             android:gravity="center" />
 
         <TextView
@@ -38,7 +37,6 @@
             android:padding="10dp"
             android:layout_margin="10dp"
             android:onClick="removeFooter"
-            android:layout_gravity="right"
             android:gravity="center"/>
 
     </LinearLayout>
