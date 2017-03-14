@@ -123,7 +123,7 @@ public class MyRecyclerView extends RecyclerView {
         return super.onTouchEvent(e);
     }
 
-    public void removeHeader(View view){
+    public void removeHeader(){
         if (header != null){
             header_status = HEADER_HIDE;
             fixHeaderHeight();
@@ -131,7 +131,7 @@ public class MyRecyclerView extends RecyclerView {
         hasHeader = false;
     }
 
-    public void removeFooter(View view){
+    public void removeFooter(){
         int size = wrapper.getRealItemCount();
 //        for (int i = size; i<size+PAGESIZE; i++){
 //            list.add(i+"");

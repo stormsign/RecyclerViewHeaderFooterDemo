@@ -9,6 +9,13 @@
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent">-->
 
+    <EditText android:id="@+id/movieName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@color/abc_hint_foreground_material_light"
+        android:layout_margin="10dp"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +34,19 @@
             android:onClick="removeHeader"
             android:gravity="center" />
 
-        <TextView
+        <TextView android:id="@+id/request"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="request"
+            android:textColor="@android:color/white"
+            android:background="@color/accent_material_light"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:onClick="request"
+            android:gravity="center" />
+
+        <TextView android:id="@+id/right"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

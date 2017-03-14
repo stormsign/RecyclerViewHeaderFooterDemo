@@ -10,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.zjb.test.recycleviewheaderfooterdemo.http.RetrofitBuilder;
 import com.zjb.test.recycleviewheaderfooterdemo.model.TypeOne;
 import com.zjb.test.recycleviewheaderfooterdemo.model.TypeThree;
 import com.zjb.test.recycleviewheaderfooterdemo.model.TypeTwo;
@@ -20,9 +22,15 @@ import com.zjb.test.recycleviewheaderfooterdemo.model.TypeTwo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-    private MyRecyclerView recyclerView;
+public class MainActivity extends AppCompatActivity {
+    @BindView(R.id.recyclerView)
+    MyRecyclerView recyclerView;
+    @BindView(R.id.movieName)
+    EditText text;
     private List<Visitor> list;
     private HeaderFooterWrapper wrapper;
     private FrameLayout parentView;
@@ -33,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         parentView = (FrameLayout) getWindow().getDecorView();
-        recyclerView = (MyRecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         list = new ArrayList<>();
@@ -83,12 +91,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void removeHeader(View view){
-        recyclerView.removeHeader(view);
+    @OnClick(R.id.left)
+    public void removeHeader(){
+        recyclerView.removeHeader();
     }
 
-    public void removeFooter(View view) {
-        recyclerView.removeFooter(view);
+    @OnClick(R.id.right)
+    public void removeFooter() {
+        recyclerView.removeFooter();
+    }
+
+    @OnClick(R.id.request)
+    public void request(){
+        RetrofitBuilder builder = new RetrofitBuilder();
+//        builder.getMovie(text.getText().toString().trim());
+//        builder.getMoviePost(text.getText().toString().trim());
+        builder.getMoviePost2(text.getText().toString().trim());
     }
 
     private void getstatusBarHeight() {
@@ -98,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("hxy:"+"statusBarHeight"+statusBarHeight);
         }
     }
-
 
 
     class MyAdapter extends RecyclerView.Adapter{
